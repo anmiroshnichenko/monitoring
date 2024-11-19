@@ -1,0 +1,23 @@
+groups:
+- name: common
+  rules:
+  - alert: InstanceDown
+    expr: up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      descriptions: '{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minute.'
+      summary: 'Instance {{ $labels.instance }} down'   
+
+
+  - alert: high_load 
+    expr: (node_load1 / ON(instance, env, group) count(count(node_cpu_seconds_total) WITHOUT (mode)))
+    for: 2m
+    labels:
+      severity: critical
+      env: '{{ $labels.env }}'
+      group: '{{ $labels.group }}'
+    annotations:
+      summary: 'Instance {{ $labels.instance }} under high load'
+      descriptions: '{{ $labels.instance }} of job {{ $labels.job }} is unde high load.'  
